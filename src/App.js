@@ -1,23 +1,68 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState } from "react";
+import Header from './Components/Header';
+import Form from './Components/InputForm';
+import Filters from './Components/Filters';
+import TaskList from './Components/TaskTemplate';
+import {nanoid} from "nanoid";
+import Footer from './Components/Footer';
 
-function App() {
+function App(props) {
+
+  const [filter, setFilter] = useState('All');
+
+  const FILTER_MAP = {
+    All: () => true,
+    Active: (task) => !task.completed,
+    Completed: (task) => task.completed
+  };
+
+  const FILTER_NAMES = Object.keys(FILTER_MAP);
+
+  const filterList = FILTER_NAMES.map((name) => (
+    <Filters key={name} name={name} isPressed={name===filter} setFilter={setFilter}/>
+  ));
+
+  const[tasks,setTask]=useState(props.tasks)
+
+  function toggleTaskCompletion(id){
+    const updatedTasks = tasks.map((task) => {
+      if (id === task.id) {
+        return {...task, completed: !task.completed}
+      }
+      return task;
+    });
+    setTask(updatedTasks);
+  }
+
+  const taskList = tasks.filter(FILTER_MAP[filter])
+  .map((task) => (
+    <TaskList name={task.name} id={task.id} key={task.id}
+     deleteTask={deleteTask} 
+    completed={task.completed} 
+     toggleTaskCompletion={toggleTaskCompletion}/>
+  ));
+
+
+  function addTask(name) {
+    const newTask={id:"todo-"+nanoid(), name:name, completed:false};
+    setTask([...tasks,newTask]);
+  }
+
+  function deleteTask(id) {
+    const remainingTasks = tasks.filter((task) => id !== task.id);
+    setTask(remainingTasks);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header className="head"/>
+      <Form className="form" addTask={addTask}/>
+      {filterList}
+      <ul className="todo-list" aria-labelledby="list-heading">
+        {taskList}
+      </ul>
+      <Footer/>
     </div>
   );
 }
