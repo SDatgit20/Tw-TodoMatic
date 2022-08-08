@@ -1,11 +1,11 @@
 import './App.css';
 import React, { useState } from "react";
-import Header from './Components/Header';
-import Form from './Components/InputForm';
-import Filters from './Components/Filters';
-import TaskList from './Components/TaskTemplate';
+import Header from './Components/Header.js';
+import Form from './Components/InputForm.js';
+import Filters from './Components/Filters.js';
+import TaskList from './Components/TaskTemplate.js';
 import {nanoid} from "nanoid";
-import Footer from './Components/Footer';
+import Footer from './Components/Footer.js';
 
 function App(props) {
 
